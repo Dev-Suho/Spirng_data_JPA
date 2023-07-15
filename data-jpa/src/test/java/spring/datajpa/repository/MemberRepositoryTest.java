@@ -10,6 +10,7 @@ import spring.datajpa.dto.MemberDto;
 import spring.datajpa.entity.Member;
 import spring.datajpa.entity.Team;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
@@ -119,6 +120,20 @@ class MemberRepositoryTest {
         List<MemberDto> memberDtoList = memberRepository.findMember();
         for (MemberDto mt : memberDtoList) {
             System.out.println("mt = " + mt);
+        }
+    }
+
+    @Test
+    void findByNames() {
+        Member memberA = new Member("suho", 23);
+        Member memberB = new Member("buho", 32);
+
+        memberRepository.save(memberA);
+        memberRepository.save(memberB);
+
+        List<Member> memberList = memberRepository.findByNames(Arrays.asList("java", "kotlin"));
+        for(Member member : memberList) {
+            System.out.println("nameList = " + member);
         }
     }
 
