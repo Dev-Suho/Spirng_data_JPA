@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.transaction.annotation.Transactional;
 import spring.datajpa.entity.Member;
 
@@ -70,5 +71,25 @@ class MemberJpaRepositoryTest {
         assertThat(memberList.get(0).getName()).isEqualTo("suho");
         assertThat(memberList.get(0).getAge()).isEqualTo(23);
         assertThat(memberList.size()).isEqualTo(1);
+    }
+
+    @Test
+    void paging() {
+        memberJpaRepository.save(new Member("java1", 15));
+        memberJpaRepository.save(new Member("java2", 15));
+        memberJpaRepository.save(new Member("java3", 15));
+        memberJpaRepository.save(new Member("java4", 15));
+        memberJpaRepository.save(new Member("java5", 15));
+        memberJpaRepository.save(new Member("java6", 15));
+
+        int age = 15;
+        int offset = 1;
+        int limit = 3;
+
+        List<Member> memberList = memberJpaRepository.findByPage(age, offset, limit);
+        long totalCount = memberJpaRepository.totalCount(age);
+
+        assertThat(memberList.size()).isEqualTo(3);
+        assertThat(totalCount).isEqualTo(6);
     }
 }

@@ -12,6 +12,7 @@ import spring.datajpa.entity.Team;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -123,6 +124,7 @@ class MemberRepositoryTest {
         }
     }
 
+
     @Test
     void findByNames() {
         Member memberA = new Member("suho", 23);
@@ -137,4 +139,15 @@ class MemberRepositoryTest {
         }
     }
 
+    @Test
+    void returnType() {
+        Member memberA = new Member("zuho", 23);
+        Member memberB = new Member("suho", 32);
+
+        memberRepository.save(memberA);
+        memberRepository.save(memberB);
+
+        Optional<Member> name = memberRepository.findOptionalByName("buho");
+        System.out.println("result = " + name);
+    }
 }
