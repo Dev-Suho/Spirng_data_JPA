@@ -4,6 +4,10 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import spring.datajpa.dto.MemberDto;
@@ -149,5 +153,46 @@ class MemberRepositoryTest {
 
         Optional<Member> name = memberRepository.findOptionalByName("buho");
         System.out.println("result = " + name);
+    }
+
+    @Test
+    void paging() {
+        memberRepository.save(new Member("java1", 15));
+        memberRepository.save(new Member("java2", 15));
+        memberRepository.save(new Member("java3", 15));
+        memberRepository.save(new Member("java4", 15));
+        memberRepository.save(new Member("java5", 15));
+        memberRepository.save(new Member("java6", 15));
+
+        int age = 15;
+        PageRequest pageRequest = PageRequest.of(0, 3, Sort.by(Sort.Direction.DESC, "name"));
+
+        Page<Member> page = memberRepository.findByAge(age, pageRequest);
+        Slice<Member> pageSlice = memberRepository.findSliceByAge(age, pageRequest);
+
+        Page<MemberDto> totalMap = page.map(member -> new MemberDto(member.getId(), member.getName(), null));
+
+        List<Member> content = page.getContent();
+        long totalElements = page.getTotalElements();
+
+        List<Member> contentSlice = page.getContent();
+
+        for (Member member : content) {
+            System.out.println("member = " + member);
+        }
+        System.out.println("totalElements = " + totalElements);
+
+        assertThat(content.size()).isEqualTo(3);
+        assertThat(page.getTotalElements()).isEqualTo(6);
+        assertThat(page.getNumber()).isEqualTo(0);
+        assertThat(page.getTotalPages()).isEqualTo(2);
+        assertThat(page.isFirst()).isTrue();
+        assertThat(page.hasNext()).isTrue();
+
+        assertThat(contentSlice.size()).isEqualTo(3);
+        assertThat(pageSlice.getNumber()).isEqualTo(0);
+        assertThat(pageSlice.isFirst()).isTrue();
+        assertThat(pageSlice.hasNext()).isTrue();
+
     }
 }
