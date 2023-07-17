@@ -14,6 +14,8 @@ import spring.datajpa.dto.MemberDto;
 import spring.datajpa.entity.Member;
 import spring.datajpa.entity.Team;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -28,6 +30,8 @@ class MemberRepositoryTest {
 
     @Autowired MemberRepository memberRepository;
     @Autowired TeamRepository teamRepository;
+    @PersistenceContext
+    EntityManager em;
 
     @Test
     void testMember() {
@@ -194,5 +198,25 @@ class MemberRepositoryTest {
         assertThat(pageSlice.isFirst()).isTrue();
         assertThat(pageSlice.hasNext()).isTrue();
 
+    }
+
+
+    @Test
+    void agePlus() {
+        memberRepository.save(new Member("memberA", 20));
+        memberRepository.save(new Member("memberB", 15));
+        memberRepository.save(new Member("memberC", 25));
+        memberRepository.save(new Member("memberD", 30));
+        memberRepository.save(new Member("memberE", 10));
+        int count = memberRepository.plusAge(20);
+        em.flush();
+        em.clear();
+
+        List<Member> findMember = memberRepository.findByName("memberD");
+        Member member = findMember.get(0);
+
+        System.out.println("member = " + member);
+
+        assertThat(count).isEqualTo(3);
     }
 }
