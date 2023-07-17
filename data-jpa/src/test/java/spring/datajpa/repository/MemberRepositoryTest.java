@@ -241,4 +241,17 @@ class MemberRepositoryTest {
             System.out.println("teamName = " + member.getTeam().getName());
         }
     }
+
+
+    @Test
+    void lock() {
+        Member memberA = new Member("memberA", 20);
+        memberRepository.save(memberA);
+
+        em.flush();
+        em.clear();
+
+        List<Member> result = memberRepository.findLockByName("memberA");
+    }
+
 }
