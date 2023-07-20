@@ -262,4 +262,25 @@ class MemberRepositoryTest {
         }
     }
 
+    @Test
+    void projections() {
+        Team teamA = new Team("teamA");
+        em.persist(teamA);
+
+        Member memberA = new Member("memberA", 10, teamA);
+        Member memberB = new Member("memberB", 20, teamA);
+
+        em.persist(memberA);
+        em.persist(memberB);
+
+        em.flush();
+        em.clear();
+
+        List<UserNameOnly> memberName = memberRepository.findProjectionByName("memberA");
+
+        for (UserNameOnly userNameOnly : memberName) {
+            System.out.println("userNameOnly = " + userNameOnly);
+        }
+    }
+
 }
